@@ -12,6 +12,8 @@ import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import RemoveOutlinedIcon from "@mui/icons-material/RemoveOutlined";
 import SwapHorizOutlinedIcon from "@mui/icons-material/SwapHorizOutlined";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import Link from "../../../components/commons/Link";
+import { APP_ROUTES } from "../../../routes/app/constants";
 
 const Container = styled.div`
   display: flex;
@@ -129,10 +131,12 @@ const Inicio = () => {
         </BalanceBox>
       </StyledBox>
       <StyledBox>
-        <StyledButton variant="outlined" color="primary">
-          <SwapHorizOutlinedIcon sx={{ height: 30 }} />
-          <div>Registrar</div> <div>Operacion</div>
-        </StyledButton>
+        <Link to={APP_ROUTES.NUEVA_OPERACION}>
+          <StyledButton variant="outlined" color="primary">
+            <SwapHorizOutlinedIcon sx={{ height: 30 }} />
+            <div>Registrar</div> <div>Operacion</div>
+          </StyledButton>
+        </Link>
         <StyledButton variant="outlined" color="primary">
           <RemoveRedEyeOutlinedIcon sx={{ height: 30 }} />
           Consultar Operaciones

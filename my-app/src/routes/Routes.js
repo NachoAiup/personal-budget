@@ -8,6 +8,7 @@ import Inicio from "./app/Inicio";
 import NotFound from "./user/NotFound";
 import { USER_ROUTES } from "./user/constants";
 import { APP_ROUTES } from "./app/constants";
+import NewTransaction from "./app/NewTransaction";
 
 const Routes = () => {
   return (
@@ -16,6 +17,10 @@ const Routes = () => {
         <Route path={USER_ROUTES.LOGIN} element={<Layout />}>
           <Route index element={<Login />} />
           <Route path={APP_ROUTES.INICIO} element={<Inicio />} />
+          <Route
+            path={APP_ROUTES.NUEVA_OPERACION}
+            element={<NewTransaction />}
+          />
           <Route path={USER_ROUTES.NUEVO_USUARIO} element={<NuevoUsuario />} />
           {/* url doesnt exist */}
           <Route path="*" element={<NotFound />} />
