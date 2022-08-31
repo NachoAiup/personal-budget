@@ -11,17 +11,7 @@ import TextField from "@mui/material/TextField";
 import NumberFormat from "react-number-format";
 import * as React from "react";
 import Button from "@mui/material/Button";
-
-const categorias = [
-  "Alquiler",
-  "Comida",
-  "Cuotas",
-  "Expensas",
-  "Impuestos",
-  "Ocio",
-  "Seguros",
-  "Servicios",
-];
+import { categories } from "../../../utils/serverData";
 
 const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(
   props,
@@ -147,8 +137,10 @@ const NewTransaction = () => {
                 label="Categoria"
                 required
               >
-                {categorias.map((categoria) => (
-                  <MenuItem value={categoria}>{categoria}</MenuItem>
+                {categories.map((categoria, index) => (
+                  <MenuItem value={categoria} key={index + 1}>
+                    {categoria}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
