@@ -9,6 +9,7 @@ import NotFound from "./user/NotFound";
 import { USER_ROUTES } from "./user/constants";
 import { APP_ROUTES } from "./app/constants";
 import NewTransaction from "./app/NewTransaction";
+import TransactionQuery from "./app/TransactionQuery/TransactionQuery";
 
 const Routes = () => {
   return (
@@ -20,6 +21,10 @@ const Routes = () => {
           <Route
             path={APP_ROUTES.NUEVA_OPERACION}
             element={<NewTransaction />}
+          />
+          <Route
+            path={APP_ROUTES.CONSULTAS_OPERACION}
+            element={<TransactionQuery />}
           />
           <Route path={USER_ROUTES.NUEVO_USUARIO} element={<NuevoUsuario />} />
           {/* url doesnt exist */}

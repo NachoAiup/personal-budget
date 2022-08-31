@@ -137,10 +137,12 @@ const Inicio = () => {
             <div>Registrar</div> <div>Operacion</div>
           </StyledButton>
         </Link>
-        <StyledButton variant="outlined" color="primary">
-          <RemoveRedEyeOutlinedIcon sx={{ height: 30 }} />
-          Consultar Operaciones
-        </StyledButton>
+        <Link to={APP_ROUTES.CONSULTAS_OPERACION}>
+          <StyledButton variant="outlined" color="primary">
+            <RemoveRedEyeOutlinedIcon sx={{ height: 30 }} />
+            Consultar Operaciones
+          </StyledButton>
+        </Link>
       </StyledBox>
       <StyledBox
         sx={{
