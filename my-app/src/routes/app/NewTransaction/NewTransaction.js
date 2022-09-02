@@ -56,16 +56,34 @@ const StyledContainer = styled(Container)`
 `;
 
 const NewTransaction = () => {
+  const [type, setType] = useState("");
+  const [category, setCategory] = useState("");
+
   const [values, setValues] = useState({
     importe: "0",
   });
   const currentDate = new Date().toISOString().split("T")[0];
 
-  const handleChange = (event) => {
+  const handleAmountChange = (e) => {
     setValues({
       ...values,
-      [event.target.name]: event.target.value,
+      [e.target.name]: e.target.value,
     });
+  };
+
+  function handleTypeChange(e) {
+    setType(e.target.value);
+  }
+
+  function handleCategoryChange(e) {
+    setCategory(e.target.value);
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(e.target).entries());
+    formData.amount = parseInt(formData.amount.replaceAll(",", "").slice(1));
+    console.log(formData);
   };
 
   return (
@@ -74,28 +92,30 @@ const NewTransaction = () => {
         <Typography variant="h6" component="h2">
           NUEVA OPERACION
         </Typography>
-        <form>
+        <form onSubmit={handleSubmit}>
           <StyledContainer>
             <FormControl size="small">
               <InputLabel id="tipo-label">Tipo</InputLabel>
               <Select
+                onChange={handleTypeChange}
                 labelId="tipo-label"
                 variant="outlined"
-                id="tipo"
-                name="tipo"
+                id="type"
+                name="type"
                 label="Tipo"
+                value={type}
                 required
               >
-                <MenuItem value="egreso">Egreso</MenuItem>
-                <MenuItem value="ingreso">Ingreso</MenuItem>
+                <MenuItem value="expenditure">Egreso</MenuItem>
+                <MenuItem value="income">Ingreso</MenuItem>
               </Select>
             </FormControl>
             <FormControl size="small">
               <TextField
                 size="small"
                 type="text"
-                id="concepto"
-                name="concepto"
+                id="concept"
+                name="concept"
                 label="Concepto"
                 required
               ></TextField>
@@ -108,18 +128,17 @@ const NewTransaction = () => {
                 inputProps={{
                   max: currentDate,
                 }}
-                id="fecha"
-                name="fecha"
+                id="date"
+                name="date"
                 label="Fecha"
                 required
               ></TextField>
             </FormControl>
             <TextField
               label="Importe"
-              //value={values.numberformat}
-              onChange={handleChange}
-              name="importe"
-              id="importe"
+              onChange={handleAmountChange}
+              name="amount"
+              id="amount"
               required
               size="small"
               InputProps={{
@@ -127,23 +146,26 @@ const NewTransaction = () => {
               }}
               variant="outlined"
             />
-            <FormControl size="small">
-              <InputLabel id="categoria-label">Categoria</InputLabel>
-              <Select
-                labelId="categoria-label"
-                variant="outlined"
-                id="categoria"
-                name="categoria"
-                label="Categoria"
-                required
-              >
-                {categories.map((categoria, index) => (
-                  <MenuItem value={categoria} key={index + 1}>
-                    {categoria}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            {type === "expenditure" && (
+              <FormControl size="small">
+                <InputLabel id="categoria-label">Categoria</InputLabel>
+                <Select
+                  onChange={handleCategoryChange}
+                  labelId="categoria-label"
+                  variant="outlined"
+                  id="category"
+                  name="category"
+                  label="Categoria"
+                  value={category}
+                >
+                  {categories.map((category, index) => (
+                    <MenuItem value={category} key={index + 1}>
+                      {category}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
             <Button type="submit" variant="outlined">
               Agregar
             </Button>
