@@ -27,7 +27,7 @@ router.post("/login", async function (req, res, next) {
 });
 
 router.post("/register", async function (req, res, next) {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
 
   if (!email || !password) {
     return next(
@@ -40,7 +40,7 @@ router.post("/register", async function (req, res, next) {
     return next(createError(httpStatus.CONFLICT));
   }
 
-  await register(email, password);
+  await register(email, password, name);
   res.status(httpStatus.CREATED).end();
 });
 

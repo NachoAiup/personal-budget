@@ -16,6 +16,7 @@ async function create(user) {
   const userToCreate = {
     email: user.email,
     password: user.password,
+    name: user.name,
   };
   const results = await connection.query(
     "INSERT INTO users SET ?",
