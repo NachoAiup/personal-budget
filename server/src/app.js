@@ -6,7 +6,6 @@ const logger = require("morgan");
 const cors = require("cors");
 const { errorConverterHandler, errorHandler } = require("./middlewares/errors");
 
-const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth/auth.routes");
 const transactionsRouter = require("./routes/transactions");
 
@@ -20,7 +19,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/transactions", transactionsRouter);
 
