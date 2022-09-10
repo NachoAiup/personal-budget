@@ -8,6 +8,7 @@ const { errorConverterHandler, errorHandler } = require("./middlewares/errors");
 
 const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth/auth.routes");
+const transactionsRouter = require("./routes/transactions");
 
 const port = process.env.PORT || 5000;
 
@@ -21,6 +22,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
+app.use("/transactions", transactionsRouter);
 
 app.use(errorConverterHandler);
 app.use(errorHandler);
