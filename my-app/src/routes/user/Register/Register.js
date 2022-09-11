@@ -16,7 +16,7 @@ const StyledPaper = styled(Paper)`
   margin-top: 60px;
 `;
 
-const NuevoUsuario = () => {
+const Register = () => {
   return (
     <StyledPaper>
       <TextField
@@ -42,4 +42,4 @@ const NuevoUsuario = () => {
   );
 };
 
-export default NuevoUsuario;
+export default Register;

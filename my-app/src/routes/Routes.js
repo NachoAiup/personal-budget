@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import { Routes as ReactRouterRoutes, Route } from "react-router-dom";
 import Layout from "../components/commons/Layout";
 import Loader from "../components/commons/Loader";
-import NuevoUsuario from "./user/NuevoUsuario";
+import Register from "./user/Register";
 import Login from "./user/Login";
-import Inicio from "./app/Inicio";
+import Home from "./app/Home";
 import NotFound from "./user/NotFound";
 import { USER_ROUTES } from "./user/constants";
 import { APP_ROUTES } from "./app/constants";
@@ -17,16 +17,16 @@ const Routes = () => {
       <ReactRouterRoutes>
         <Route path={USER_ROUTES.LOGIN} element={<Layout />}>
           <Route index element={<Login />} />
-          <Route path={APP_ROUTES.INICIO} element={<Inicio />} />
+          <Route path={APP_ROUTES.HOME} element={<Home />} />
           <Route
-            path={APP_ROUTES.NUEVA_OPERACION}
+            path={APP_ROUTES.NEW_TRANSACTION}
             element={<NewTransaction />}
           />
           <Route
-            path={APP_ROUTES.CONSULTAS_OPERACION}
+            path={APP_ROUTES.TRANSACTION_QUERY}
             element={<TransactionQuery />}
           />
-          <Route path={USER_ROUTES.NUEVO_USUARIO} element={<NuevoUsuario />} />
+          <Route path={USER_ROUTES.REGISTER} element={<Register />} />
           {/* url doesnt exist */}
           <Route path="*" element={<NotFound />} />
         </Route>
