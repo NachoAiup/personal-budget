@@ -51,7 +51,7 @@ function Layout() {
     <div>
       <AppBar>
         <Toolbar>
-          <StyledLink to={APP_ROUTES.INICIO}>
+          <StyledLink to={APP_ROUTES.HOME}>
             <MonetizationOnIcon sx={{ color: "white" }} />
             <LogoText variant="h6">
               PRESUPUESTO

@@ -69,7 +69,7 @@ const Login = () => {
         <Button variant="contained">INICIAR SESION</Button>
       </StyledPaper>
       <StyledPaper>
-        <Link to={USER_ROUTES.NUEVO_USUARIO}>
+        <Link to={USER_ROUTES.REGISTER}>
           <Button variant="contained" color="success" fullWidth>
             CREAR CUENTA NUEVA
           </Button>

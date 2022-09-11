@@ -13,7 +13,7 @@ import RemoveOutlinedIcon from "@mui/icons-material/RemoveOutlined";
 import SwapHorizOutlinedIcon from "@mui/icons-material/SwapHorizOutlined";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import Link from "../../../components/commons/Link";
-import { APP_ROUTES } from "../../../routes/app/constants";
+import { APP_ROUTES } from "../constants";
 
 const Container = styled.div`
   display: flex;
@@ -94,7 +94,7 @@ const trasactionsData = [
   { amount: "2.500", type: "income", date: "12/03/2022" },
 ];
 
-const Inicio = () => {
+const Home = () => {
   const [toggle, setToggle] = React.useState(false);
   const [hideBalance, setHideBalance] = React.useState(false);
   return (
@@ -131,13 +131,13 @@ const Inicio = () => {
         </BalanceBox>
       </StyledBox>
       <StyledBox>
-        <Link to={APP_ROUTES.NUEVA_OPERACION}>
+        <Link to={APP_ROUTES.NEW_TRANSACTION}>
           <StyledButton variant="outlined" color="primary">
             <SwapHorizOutlinedIcon sx={{ height: 30 }} />
             <div>Registrar</div> <div>Operacion</div>
           </StyledButton>
         </Link>
-        <Link to={APP_ROUTES.CONSULTAS_OPERACION}>
+        <Link to={APP_ROUTES.TRANSACTION_QUERY}>
           <StyledButton variant="outlined" color="primary">
             <RemoveRedEyeOutlinedIcon sx={{ height: 30 }} />
             Consultar Operaciones
@@ -184,4 +184,4 @@ const Inicio = () => {
   );
 };
 
-export default Inicio;
+export default Home;
