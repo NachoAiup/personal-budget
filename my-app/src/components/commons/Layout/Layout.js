@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import Container from "@mui/material/Container";
 import AppBar from "@mui/material/AppBar";
@@ -13,6 +13,8 @@ import Typography from "@mui/material/Typography";
 import Link from "../Link";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import { APP_ROUTES } from "../../../routes/app/constants";
+import { USER_ROUTES } from "../../../routes/user/constants";
+import { useUserState, useUserUpdater } from "../../../providers/UserProvider";
 
 const StyledLink = styled(Link)`
   display: flex;
@@ -33,10 +35,9 @@ const StyledContainer = styled(Container)`
 `;
 
 function Layout() {
-  const [
-    auth,
-    // setAuth
-  ] = useState(true);
+  const { isLoggedIn } = useUserState();
+  const setUser = useUserUpdater();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenu = (event) => {
@@ -47,11 +48,20 @@ function Layout() {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("Username");
+    localStorage.removeItem("UserID");
+    setUser({ isLoggedIn: false, username: null });
+    navigate(APP_ROUTES.MENU);
+    handleClose();
+  };
+
   return (
     <div>
       <AppBar>
         <Toolbar>
-          <StyledLink to={APP_ROUTES.HOME}>
+          <StyledLink to={isLoggedIn ? APP_ROUTES.HOME : USER_ROUTES.LOGIN}>
             <MonetizationOnIcon sx={{ color: "white" }} />
             <LogoText variant="h6">
               PRESUPUESTO
@@ -60,7 +70,7 @@ function Layout() {
             </LogoText>
           </StyledLink>
           <Box sx={{ flexGrow: 1 }}></Box>
-          {auth && (
+          {isLoggedIn && (
             <div>
               <IconButton
                 size="large"
@@ -79,7 +89,7 @@ function Layout() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Logout</MenuItem>
+                <MenuItem onClick={handleLogout}>Cerrar Sesion</MenuItem>
               </Menu>
             </div>
           )}
