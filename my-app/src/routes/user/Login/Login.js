@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
@@ -13,6 +14,19 @@ import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Link from "../../../components/commons/Link";
 import { USER_ROUTES } from "../constants";
+import { APP_ROUTES } from "../../app/constants";
+import { useUserState, useUserUpdater } from "../../../providers/UserProvider";
+
+async function postData(url = "", data = {}) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  return response;
+}
 
 const StyledPaper = styled(Paper)`
   max-width: 600px;
@@ -25,6 +39,9 @@ const StyledPaper = styled(Paper)`
 `;
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn } = useUserState();
+  const setUser = useUserUpdater();
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => {
@@ -35,14 +52,37 @@ const Login = () => {
     event.preventDefault();
   };
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate(APP_ROUTES.HOME);
+    }
+  }, [isLoggedIn, navigate]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(e.target).entries());
+    postData("/auth/login", formData)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data?.token) {
+          setUser({ isLoggedIn: true, username: data.name });
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("Username", data.name);
+          localStorage.setItem("UserID", data.user_id);
+          navigate(APP_ROUTES.HOME);
+        }
+      });
+  };
+
   return (
     <Container>
-      <StyledPaper>
+      <StyledPaper component="form" onSubmit={handleSubmit}>
         <TextField
           id="outlined-basic"
           label="Email"
           variant="outlined"
           type="email"
+          name="email"
           required
         />
         <FormControl variant="outlined">
@@ -63,10 +103,13 @@ const Login = () => {
               </InputAdornment>
             }
             label="Password"
+            name="password"
             required
           />
         </FormControl>
-        <Button variant="contained">INICIAR SESION</Button>
+        <Button variant="contained" type="submit">
+          INICIAR SESION
+        </Button>
       </StyledPaper>
       <StyledPaper>
         <Link to={USER_ROUTES.REGISTER}>
