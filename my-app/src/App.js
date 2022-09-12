@@ -7,6 +7,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { red, grey } from "@mui/material/colors";
 import Routes from "./routes";
+import Providers from "./providers";
 
 const theme = createTheme({
   palette: {
@@ -19,7 +20,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Routes />
+      <Providers>
+        <Routes />
+      </Providers>
     </ThemeProvider>
   );
 }

@@ -1,5 +1,5 @@
 export const APP_ROUTES = {
-  HOME: "/home",
+  HOME: "/inicio",
   NEW_TRANSACTION: "/nueva-operacion",
   TRANSACTION_QUERY: "/consultas-operacion",
 };
