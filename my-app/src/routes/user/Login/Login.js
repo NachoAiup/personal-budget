@@ -12,7 +12,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Link from "../../../components/commons/Link";
-import { USER_ROUTES } from "../../../routes/user/constants";
+import { USER_ROUTES } from "../constants";
 
 const StyledPaper = styled(Paper)`
   max-width: 600px;
