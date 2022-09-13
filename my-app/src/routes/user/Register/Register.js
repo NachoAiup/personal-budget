@@ -6,6 +6,10 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import {
+  useSnackbarUpdater,
+  SNACKBAR_SEVERITY,
+} from "../../../providers/SnackbarProvider";
 
 async function postData(url = "", data = {}) {
   const response = await fetch(url, {
@@ -32,6 +36,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const setSnackbar = useSnackbarUpdater();
 
   const handleChange = (e) => {
     e.target.name === "email"
@@ -44,13 +49,28 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.target).entries());
-    postData("/auth/register", formData).then((response) => {
-      if (response.status === 201) {
-        setEmail("");
-        setName("");
-        setPassword("");
-      }
-    });
+    postData("/auth/register", formData)
+      .then((response) => {
+        if (response.status === 201) {
+          setSnackbar({
+            open: true,
+            message: "Usuario registrado con exito!",
+            severity: SNACKBAR_SEVERITY.SUCCESS,
+          });
+          setEmail("");
+          setName("");
+          setPassword("");
+        } else {
+          throw new Error();
+        }
+      })
+      .catch((e) => {
+        setSnackbar({
+          open: true,
+          message: "Hubo un error con el registro",
+          severity: SNACKBAR_SEVERITY.ERROR,
+        });
+      });
   };
 
   return (

@@ -16,6 +16,10 @@ import Link from "../../../components/commons/Link";
 import { USER_ROUTES } from "../constants";
 import { APP_ROUTES } from "../../app/constants";
 import { useUserState, useUserUpdater } from "../../../providers/UserProvider";
+import {
+  useSnackbarUpdater,
+  SNACKBAR_SEVERITY,
+} from "../../../providers/SnackbarProvider";
 
 async function postData(url = "", data = {}) {
   const response = await fetch(url, {
@@ -43,6 +47,7 @@ const Login = () => {
   const { isLoggedIn } = useUserState();
   const setUser = useUserUpdater();
   const [showPassword, setShowPassword] = useState(false);
+  const setSnackbar = useSnackbarUpdater();
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -70,7 +75,16 @@ const Login = () => {
           localStorage.setItem("Username", data.name);
           localStorage.setItem("UserID", data.user_id);
           navigate(APP_ROUTES.HOME);
+        } else {
+          throw new Error();
         }
+      })
+      .catch((e) => {
+        setSnackbar({
+          open: true,
+          message: "Hubo un error con el registro",
+          severity: SNACKBAR_SEVERITY.ERROR,
+        });
       });
   };
 
