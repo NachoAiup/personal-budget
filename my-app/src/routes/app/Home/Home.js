@@ -14,6 +14,18 @@ import SwapHorizOutlinedIcon from "@mui/icons-material/SwapHorizOutlined";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import Link from "../../../components/commons/Link";
 import { APP_ROUTES } from "../constants";
+import { useUserState } from "../../../providers/UserProvider";
+
+async function getData(url = "") {
+  let token = localStorage.getItem("token");
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response;
+}
 
 const Container = styled.div`
   display: flex;
@@ -81,26 +93,54 @@ const StyledList = styled(List)`
     0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
 `;
 
-const trasactionsData = [
-  { amount: "4.500", type: "income", date: "09/04/2022" },
-  { amount: "300", type: "expenditure", date: "09/04/2022" },
-  { amount: "1.300", type: "expenditure", date: "02/04/2022" },
-  { amount: "1.100", type: "expenditure", date: "01/04/2022" },
-  { amount: "500", type: "income", date: "29/03/2022" },
-  { amount: "4.300", type: "expenditure", date: "29/03/2022" },
-  { amount: "14.500", type: "income", date: "20/03/2022" },
-  { amount: "3.000", type: "expenditure", date: "19/03/2022" },
-  { amount: "3.200", type: "income", date: "15/03/2022" },
-  { amount: "2.500", type: "income", date: "12/03/2022" },
-];
+function numberWithDots(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function getTotal(data) {
+  let totalAmount = 0;
+  data.forEach((x) =>
+    x.type === "income"
+      ? (totalAmount += parseInt(x.amount))
+      : (totalAmount -= parseInt(x.amount))
+  );
+  return numberWithDots(totalAmount);
+}
+
+function dateFormat(date) {
+  date = new Date(date);
+  return (
+    date.getDate().toString().padStart(2, "0") +
+    "-" +
+    (date.getMonth() + 1).toString().padStart(2, "0") +
+    "-" +
+    date.getFullYear()
+  );
+}
 
 const Home = () => {
   const [toggle, setToggle] = React.useState(false);
   const [hideBalance, setHideBalance] = React.useState(false);
+  const [balance, setBalance] = React.useState("");
+  const [transactionsList, setTransactionsList] = React.useState(null);
+  const { username } = useUserState();
+
+  React.useEffect(() => {
+    getData("/transactions/transactionsAmount")
+      .then((res) => res.json())
+      .then((data) => setBalance(getTotal(data)));
+  }, []);
+
+  React.useEffect(() => {
+    getData("/transactions/lastTenTransactions")
+      .then((res) => res.json())
+      .then((data) => setTransactionsList(data));
+  }, []);
+
   return (
     <Container>
       <Greeting>
-        Hola, <b>Username</b>
+        Hola, <b>{username}</b>
       </Greeting>
       <StyledBox sx={{ flexDirection: "column" }}>
         <StyledBox>
@@ -126,7 +166,7 @@ const Home = () => {
         <BalanceBox>
           <Typography fontSize={14}>SALDO TOTAL</Typography>
           <Typography variant="h5">
-            {hideBalance ? "$ •••••" : "$ 43.157,16"}
+            {hideBalance ? "$ •••••" : "$ " + balance}
           </Typography>
         </BalanceBox>
       </StyledBox>
@@ -153,8 +193,9 @@ const Home = () => {
           Últimos registros
         </Typography>
         <StyledList>
-          {trasactionsData.map((transaction) => (
+          {transactionsList?.map((transaction) => (
             <ListItem
+              key={transaction.transaction_id}
               sx={{
                 height: "50px",
                 "&:hover": {
@@ -173,8 +214,8 @@ const Home = () => {
                 </Avatar>
               </ListItemAvatar>
               <ListItemText
-                primary={"$" + transaction.amount}
-                secondary={transaction.date}
+                primary={"$ " + numberWithDots(transaction.amount)}
+                secondary={dateFormat(transaction.date)}
               />
             </ListItem>
           ))}

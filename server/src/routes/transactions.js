@@ -10,7 +10,7 @@ router.get("/lastTenTransactions", verifyTokenMiddleware, async (req, res) => {
   const connection = await mysql.createConnection(databaseConfig);
   const user_id = req.user.id;
   const results = await connection.query(
-    "SELECT * FROM transactions WHERE user_id = ? ORDER BY date LIMIT 10",
+    "SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC LIMIT 10",
     user_id
   );
   connection.end();
