@@ -53,7 +53,7 @@ function Layout() {
     localStorage.removeItem("Username");
     localStorage.removeItem("UserID");
     setUser({ isLoggedIn: false, username: null });
-    navigate(APP_ROUTES.MENU);
+    navigate(USER_ROUTES.LOGIN);
     handleClose();
   };
 
