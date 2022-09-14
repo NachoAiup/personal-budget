@@ -12,6 +12,10 @@ import NumberFormat from "react-number-format";
 import * as React from "react";
 import Button from "@mui/material/Button";
 import { categories } from "../../../utils/serverData";
+import {
+  useSnackbarUpdater,
+  SNACKBAR_SEVERITY,
+} from "../../../providers/SnackbarProvider";
 
 const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(
   props,
@@ -55,14 +59,36 @@ const StyledContainer = styled(Container)`
   gap: 15px;
 `;
 
+async function postData(url = "", data = {}) {
+  let token = localStorage.getItem("token");
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  return response;
+}
+
 const NewTransaction = () => {
   const [type, setType] = useState("");
   const [category, setCategory] = useState("");
-
+  const [concept, setConcept] = useState("");
+  const [date, setDate] = useState("");
+  const setSnackbar = useSnackbarUpdater();
   const [values, setValues] = useState({
     importe: "0",
   });
+
   const currentDate = new Date().toISOString().split("T")[0];
+
+  const handleChange = (e) => {
+    e.target.name === "date"
+      ? setDate(e.target.value)
+      : setConcept(e.target.value);
+  };
 
   const handleAmountChange = (e) => {
     setValues({
@@ -83,7 +109,29 @@ const NewTransaction = () => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.target).entries());
     formData.amount = parseInt(formData.amount.replaceAll(",", "").slice(1));
-    console.log(formData);
+    postData("transactions", formData)
+      .then((response) => {
+        if (response.status === 201) {
+          setSnackbar({
+            open: true,
+            message: "Operacion registrada con exito!",
+            severity: SNACKBAR_SEVERITY.SUCCESS,
+          });
+          setType("");
+          setCategory("");
+          setConcept("");
+          setDate("");
+        } else {
+          throw new Error();
+        }
+      })
+      .catch((e) => {
+        setSnackbar({
+          open: true,
+          message: "Hubo un error con el registro",
+          severity: SNACKBAR_SEVERITY.ERROR,
+        });
+      });
   };
 
   return (
@@ -117,6 +165,8 @@ const NewTransaction = () => {
                 id="concept"
                 name="concept"
                 label="Concepto"
+                onChange={handleChange}
+                value={concept}
                 required
               ></TextField>
             </FormControl>
@@ -131,6 +181,8 @@ const NewTransaction = () => {
                 id="date"
                 name="date"
                 label="Fecha"
+                onChange={handleChange}
+                value={date}
                 required
               ></TextField>
             </FormControl>
