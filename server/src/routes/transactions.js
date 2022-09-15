@@ -17,6 +17,17 @@ router.get("/lastTenTransactions", verifyTokenMiddleware, async (req, res) => {
   res.json(results[0]);
 });
 
+router.get("/getTransactionsYears", verifyTokenMiddleware, async (req, res) => {
+  const connection = await mysql.createConnection(databaseConfig);
+  const user_id = req.user.id;
+  const results = await connection.query(
+    "SELECT DISTINCT year(date) AS year FROM transactions WHERE user_id = ? ORDER BY date DESC",
+    user_id
+  );
+  connection.end();
+  res.json(results[0]);
+});
+
 router.get("/transactionsAmount", verifyTokenMiddleware, async (req, res) => {
   const connection = await mysql.createConnection(databaseConfig);
   const user_id = req.user.id;

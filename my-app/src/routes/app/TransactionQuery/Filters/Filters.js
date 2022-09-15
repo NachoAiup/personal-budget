@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -5,7 +6,19 @@ import FormControl from "@mui/material/FormControl";
 import { months } from "../../../../utils/date";
 import { categories } from "../../../../utils/serverData";
 
-const Filters = ({ yearsArr, form, setForm }) => {
+async function getData(url = "") {
+  let token = localStorage.getItem("token");
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response;
+}
+
+const Filters = ({ form, setForm }) => {
+  const [yearsArr, setYearsArr] = useState([]);
   const handleChange = (e) => {
     const name = e.target.name;
     let value = e.target.value;
@@ -24,6 +37,13 @@ const Filters = ({ yearsArr, form, setForm }) => {
           [name]: value,
         });
   };
+
+  useEffect(() => {
+    getData("/transactions/getTransactionsYears")
+      .then((res) => res.json())
+      .then((data) => setYearsArr(data));
+  }, []);
+
   return (
     <>
       <FormControl size="small">
@@ -53,9 +73,9 @@ const Filters = ({ yearsArr, form, setForm }) => {
           label="Año"
           defaultValue={form.year}
         >
-          {yearsArr.map((year, index) => (
-            <MenuItem value={year} key={index + 1}>
-              {year}
+          {yearsArr?.map((year, index) => (
+            <MenuItem value={year.year} key={index + 1}>
+              {year.year}
             </MenuItem>
           ))}
         </Select>
