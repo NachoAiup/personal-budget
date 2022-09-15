@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import TransactionsTable from "./TransactionsTable";
@@ -42,46 +42,74 @@ const StyledAccordionDetails = styled(AccordionDetails)`
 let yearsArr = transactionsData.map((x) => x.date.slice(6, 10));
 yearsArr = yearsArr.filter((v, i, a) => a.indexOf(v) === i);
 
+async function getData(url = "") {
+  let token = localStorage.getItem("token");
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response;
+}
+
+function numberWithDots(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function getTotal(data) {
+  let totalAmount = 0;
+  data.forEach((x) =>
+    x.type === "income"
+      ? (totalAmount += parseInt(x.amount))
+      : (totalAmount -= parseInt(x.amount))
+  );
+  return numberWithDots(totalAmount);
+}
+
 const TransactionQuery = () => {
-  const [month, setMonth] = useState(currentMonth);
-  const [type, setType] = useState("all");
-  const [category, setCategory] = useState("all");
-  const [year, setYear] = useState(currentYear);
+  const [data, setData] = useState(null);
+  const [balance, setBalance] = useState("");
+  const [form, setForm] = useState({
+    month: currentMonth,
+    year: currentYear,
+    type: "all",
+    category: "all",
+    date: currentYear + "-" + currentMonth.toString().padStart(2, "0") + "-%",
+  });
 
   const matches = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
-  function handleMonthChange(e) {
-    setMonth(e.target.value);
-  }
-  function handleTypeChange(e) {
-    setType(e.target.value);
-  }
-  function handleCategoryChange(e) {
-    setCategory(e.target.value);
-  }
-  function handleYearChange(e) {
-    setYear(e.target.value);
-  }
+  useEffect(() => {
+    getData("/transactions/transactionsAmount")
+      .then((res) => res.json())
+      .then((data) => setBalance(getTotal(data)));
+  }, []);
+
+  useEffect(() => {
+    if (form.type !== "expenditure") {
+      form.category = "all";
+    }
+    const query = Object.entries(form)
+      .filter(([key, value]) => value !== "all")
+      .map(([key, value]) => `${key}=${value}`)
+      .join("&");
+    getData(`transactions/transactionsByFilters?${query}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setData(data);
+      });
+  }, [form]);
 
   return (
     <div>
       <StyledContainer>
         <Typography variant="h6" component="h2">
           Listado de operaciones
-          <Div>SALDO TOTAL: $43.157,16</Div>
+          <Div>SALDO TOTAL: $ {balance}</Div>
         </Typography>
         {matches ? (
-          <Filters
-            yearsArr={yearsArr}
-            year={year}
-            type={type}
-            month={month}
-            category={category}
-            handleMonthChange={handleMonthChange}
-            handleTypeChange={handleTypeChange}
-            handleCategoryChange={handleCategoryChange}
-            handleYearChange={handleYearChange}
-          />
+          <Filters yearsArr={yearsArr} form={form} setForm={setForm} />
         ) : (
           <Accordion>
             <AccordionSummary
@@ -92,27 +120,12 @@ const TransactionQuery = () => {
               <Typography>Filtros</Typography>
             </AccordionSummary>
             <StyledAccordionDetails>
-              <Filters
-                yearsArr={yearsArr}
-                year={year}
-                type={type}
-                month={month}
-                category={category}
-                handleMonthChange={handleMonthChange}
-                handleTypeChange={handleTypeChange}
-                handleCategoryChange={handleCategoryChange}
-                handleYearChange={handleYearChange}
-              />
+              <Filters yearsArr={yearsArr} form={form} setForm={setForm} />
             </StyledAccordionDetails>
           </Accordion>
         )}
       </StyledContainer>
-      <TransactionsTable
-        month={month}
-        type={type}
-        category={category}
-        year={year}
-      />
+      <TransactionsTable data={data} />
     </div>
   );
 };

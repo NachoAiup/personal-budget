@@ -5,28 +5,36 @@ import FormControl from "@mui/material/FormControl";
 import { months } from "../../../../utils/date";
 import { categories } from "../../../../utils/serverData";
 
-const Filters = ({
-  type,
-  yearsArr,
-  month,
-  year,
-  category,
-  handleMonthChange,
-  handleTypeChange,
-  handleCategoryChange,
-  handleYearChange,
-}) => {
+const Filters = ({ yearsArr, form, setForm }) => {
+  const handleChange = (e) => {
+    const name = e.target.name;
+    let value = e.target.value;
+    name === "year"
+      ? setForm({
+          ...form,
+          date: value + "-" + form.month.toString().padStart(2, "0") + "-%",
+        })
+      : name === "month"
+      ? setForm({
+          ...form,
+          date: form.year + "-" + value.toString().padStart(2, "0") + "-%",
+        })
+      : setForm({
+          ...form,
+          [name]: value,
+        });
+  };
   return (
     <>
       <FormControl size="small">
         <InputLabel id="month-label">Mes</InputLabel>
         <Select
-          onChange={handleMonthChange}
+          onChange={handleChange}
           labelId="month-label"
           id="month"
           name="month"
           label="Mes"
-          defaultValue={month}
+          defaultValue={form.month}
         >
           {months.map((month, index) => (
             <MenuItem value={index + 1} key={index + 1}>
@@ -38,12 +46,12 @@ const Filters = ({
       <FormControl size="small">
         <InputLabel id="year-label">Año</InputLabel>
         <Select
-          onChange={handleYearChange}
+          onChange={handleChange}
           labelId="year-label"
           id="year"
           name="year"
           label="Año"
-          defaultValue={year}
+          defaultValue={form.year}
         >
           {yearsArr.map((year, index) => (
             <MenuItem value={year} key={index + 1}>
@@ -55,33 +63,34 @@ const Filters = ({
       <FormControl size="small" sx={{ width: "120px" }}>
         <InputLabel id="transactionType-label">Tipo</InputLabel>
         <Select
-          onChange={handleTypeChange}
+          onChange={handleChange}
           labelId="transactionType-label"
           id="transactionType"
           label="Tipo"
-          defaultValue={type}
+          name="type"
+          defaultValue={form.type}
         >
           <MenuItem value="all">Todos</MenuItem>
           <MenuItem value="expenditure">Egreso</MenuItem>
           <MenuItem value="income">Ingreso</MenuItem>
         </Select>
       </FormControl>
-      {type === "expenditure" && (
+      {form.type === "expenditure" && (
         <FormControl size="small">
           <InputLabel id="categoria-label">Categoria</InputLabel>
           <Select
             labelId="categoria-label"
             variant="outlined"
-            id="categoria"
-            name="categoria"
+            id="category"
+            name="category"
             label="Categoria"
-            defaultValue={category}
-            onChange={handleCategoryChange}
+            defaultValue={form.category}
+            onChange={handleChange}
           >
             <MenuItem value="all">Todos</MenuItem>
-            {categories.map((categoria, index) => (
-              <MenuItem value={categoria} key={index + 1}>
-                {categoria}
+            {categories.map((category, index) => (
+              <MenuItem value={category} key={index + 1}>
+                {category}
               </MenuItem>
             ))}
           </Select>
