@@ -5,7 +5,6 @@ import TransactionsTable from "./TransactionsTable";
 import Filters from "./Filters";
 import Container from "@mui/material/Container";
 import { getCurrentMonthYear } from "../../../utils/date";
-import { transactionsData } from "../../../utils/serverData";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -38,9 +37,6 @@ const StyledAccordionDetails = styled(AccordionDetails)`
   gap: 15px;
   justify-content: center;
 `;
-
-let yearsArr = transactionsData.map((x) => x.date.slice(6, 10));
-yearsArr = yearsArr.filter((v, i, a) => a.indexOf(v) === i);
 
 async function getData(url = "") {
   let token = localStorage.getItem("token");
@@ -109,7 +105,7 @@ const TransactionQuery = () => {
           <Div>SALDO TOTAL: $ {balance}</Div>
         </Typography>
         {matches ? (
-          <Filters yearsArr={yearsArr} form={form} setForm={setForm} />
+          <Filters form={form} setForm={setForm} />
         ) : (
           <Accordion>
             <AccordionSummary
@@ -120,7 +116,7 @@ const TransactionQuery = () => {
               <Typography>Filtros</Typography>
             </AccordionSummary>
             <StyledAccordionDetails>
-              <Filters yearsArr={yearsArr} form={form} setForm={setForm} />
+              <Filters form={form} setForm={setForm} />
             </StyledAccordionDetails>
           </Accordion>
         )}
