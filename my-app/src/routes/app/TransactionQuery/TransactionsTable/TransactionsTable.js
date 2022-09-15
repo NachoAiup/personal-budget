@@ -10,7 +10,6 @@ import TableFooter from "@mui/material/TableFooter";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { transactionsData } from "../../../../utils/serverData";
 
 const columns = [
   { id: "fecha", label: "FECHA" },
@@ -22,6 +21,17 @@ const columns = [
 
 function numberWithDots(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function dateFormat(date) {
+  date = new Date(date);
+  return (
+    date.getDate().toString().padStart(2, "0") +
+    "-" +
+    (date.getMonth() + 1).toString().padStart(2, "0") +
+    "-" +
+    date.getFullYear()
+  );
 }
 
 const StyledPaper = styled(Paper)`
@@ -37,39 +47,26 @@ const StyledPaper = styled(Paper)`
   }
 `;
 
-const Table = ({ month, type, category, year }) => {
-  const data = transactionsData.filter((x) =>
-    type !== "all" && category === "all"
-      ? parseInt(x.date.slice(4, 5)) === month &&
-        parseInt(x.date.slice(6, 10)) === parseInt(year) &&
-        type === x.type
-      : type !== "all" && category !== "all"
-      ? parseInt(x.date.slice(4, 5)) === month &&
-        parseInt(x.date.slice(6, 10)) === parseInt(year) &&
-        x.category === category
-      : parseInt(x.date.slice(4, 5)) === month &&
-        parseInt(x.date.slice(6, 10)) === parseInt(year)
+function getTotal(data) {
+  let a = 0;
+  data?.forEach((x) =>
+    x.type === "income" ? (a += parseInt(x.amount)) : (a -= parseInt(x.amount))
   );
+  return numberWithDots(a);
+}
 
-  function getTotal() {
-    let a = 0;
-    data.forEach((x) =>
-      x.type === "income"
-        ? (a += parseInt(x.amount))
-        : (a -= parseInt(x.amount))
-    );
-    return numberWithDots(a);
-  }
+const Table = ({ data }) => {
   const footer = {
     fecha: "TOTAL: ",
     descripcion: null,
-    importe: `$ ${getTotal()}`,
+    importe: `$ ${getTotal(data)}`,
     editButton: null,
     deleteButton: null,
   };
 
   const rows = data?.map((transaction) => ({
-    fecha: transaction.date,
+    code: transaction.transaction_id,
+    fecha: dateFormat(transaction.date),
     descripcion:
       transaction.concept +
       (transaction.category ? " - " + transaction.category : ""),
@@ -110,7 +107,7 @@ const Table = ({ month, type, category, year }) => {
           </TableHead>
           <TableBody>
             {rows?.length ? (
-              rows.map((row) => (
+              rows.map((row, index) => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                   {columns.map((column) => {
                     const value = row[column.id];
