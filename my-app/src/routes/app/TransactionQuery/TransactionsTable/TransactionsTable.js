@@ -10,6 +10,8 @@ import TableFooter from "@mui/material/TableFooter";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useState } from "react";
+import TransactionsConfigurations from "./TransactionsConfigurations";
 
 const columns = [
   { id: "fecha", label: "FECHA" },
@@ -56,6 +58,19 @@ function getTotal(data) {
 }
 
 const Table = ({ data }) => {
+  const [isOpenFormModal, setIsOpenFormModal] = useState(false);
+  const [currentTransaction, setCurrentTransaction] = useState(null);
+
+  const handleEditTransactionClick = (transaction) => {
+    setCurrentTransaction(transaction);
+    setIsOpenFormModal(true);
+  };
+
+  const handleFormModalClose = () => {
+    setIsOpenFormModal(false);
+    setCurrentTransaction(null);
+  };
+
   const footer = {
     fecha: "TOTAL: ",
     descripcion: null,
@@ -75,7 +90,7 @@ const Table = ({ data }) => {
     ),
     editButton: (
       <Button>
-        <EditIcon />
+        <EditIcon onClick={() => handleEditTransactionClick(transaction)} />
       </Button>
     ),
     deleteButton: (
@@ -155,6 +170,12 @@ const Table = ({ data }) => {
           </TableFooter>
         </MUITable>
       </TableContainer>
+      <TransactionsConfigurations
+        open={isOpenFormModal}
+        onClose={handleFormModalClose}
+        currentTransaction={currentTransaction}
+        setIsOpenFormModal={setIsOpenFormModal}
+      />
     </StyledPaper>
   );
 };
