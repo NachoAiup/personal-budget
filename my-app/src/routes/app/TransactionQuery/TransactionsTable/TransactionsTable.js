@@ -60,8 +60,10 @@ function getTotal(data) {
 const Table = ({ data }) => {
   const [isOpenFormModal, setIsOpenFormModal] = useState(false);
   const [currentTransaction, setCurrentTransaction] = useState(null);
+  const [variant, setVariant] = useState("");
 
-  const handleEditTransactionClick = (transaction) => {
+  const handleButtonsTransactionClick = (transaction, variant) => {
+    setVariant(variant);
     setCurrentTransaction(transaction);
     setIsOpenFormModal(true);
   };
@@ -90,12 +92,16 @@ const Table = ({ data }) => {
     ),
     editButton: (
       <Button>
-        <EditIcon onClick={() => handleEditTransactionClick(transaction)} />
+        <EditIcon
+          onClick={() => handleButtonsTransactionClick(transaction, "edit")}
+        />
       </Button>
     ),
     deleteButton: (
       <Button>
-        <DeleteIcon />
+        <DeleteIcon
+          onClick={() => handleButtonsTransactionClick(transaction, "delete")}
+        />
       </Button>
     ),
   }));
@@ -175,6 +181,7 @@ const Table = ({ data }) => {
         onClose={handleFormModalClose}
         currentTransaction={currentTransaction}
         setIsOpenFormModal={setIsOpenFormModal}
+        variant={variant}
       />
     </StyledPaper>
   );

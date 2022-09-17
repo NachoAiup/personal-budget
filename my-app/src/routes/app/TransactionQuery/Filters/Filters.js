@@ -25,11 +25,13 @@ const Filters = ({ form, setForm }) => {
     name === "year"
       ? setForm({
           ...form,
+          [name]: value,
           date: value + "-" + form.month.toString().padStart(2, "0") + "-%",
         })
       : name === "month"
       ? setForm({
           ...form,
+          [name]: value,
           date: form.year + "-" + value.toString().padStart(2, "0") + "-%",
         })
       : setForm({
