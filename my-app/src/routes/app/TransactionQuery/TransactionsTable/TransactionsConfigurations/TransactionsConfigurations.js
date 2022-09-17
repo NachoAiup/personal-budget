@@ -25,6 +25,18 @@ async function putData(url = "", data = {}) {
   return response;
 }
 
+async function deleteData(url = "") {
+  let token = localStorage.getItem("token");
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response;
+}
+
 const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(
   props,
   ref
@@ -55,72 +67,106 @@ const TransactionsConfigurations = ({
   open,
   onClose,
   setIsOpenFormModal,
+  variant,
 }) => {
   const setSnackbar = useSnackbarUpdater();
 
   function handleSubmit(e) {
     e.preventDefault();
-    const formData = Object.fromEntries(new FormData(e.target).entries());
-    formData.amount = parseInt(formData.amount.replaceAll(",", "").slice(1));
-    putData(`/transactions/${currentTransaction.transaction_id}`, formData)
-      .then((response) => {
-        if (response.status === 201) {
+    if (variant === "edit") {
+      const formData = Object.fromEntries(new FormData(e.target).entries());
+      formData.amount = parseInt(formData.amount.replaceAll(",", "").slice(1));
+      putData(`/transactions/${currentTransaction.transaction_id}`, formData)
+        .then((response) => {
+          if (response.status === 201) {
+            setIsOpenFormModal(false);
+            window.location.reload(false);
+            setSnackbar({
+              open: true,
+              message: "Operacion registrada con exito!",
+              severity: SNACKBAR_SEVERITY.SUCCESS,
+            });
+          } else {
+            throw new Error();
+          }
+        })
+        .catch((e) => {
           setIsOpenFormModal(false);
-          window.location.reload(false);
           setSnackbar({
             open: true,
-            message: "Operacion registrada con exito!",
-            severity: SNACKBAR_SEVERITY.SUCCESS,
+            message: "Hubo un error con el registro",
+            severity: SNACKBAR_SEVERITY.ERROR,
           });
-        } else {
-          throw new Error();
-        }
-      })
-      .catch((e) => {
-        setIsOpenFormModal(false);
-        setSnackbar({
-          open: true,
-          message: "Hubo un error con el registro",
-          severity: SNACKBAR_SEVERITY.ERROR,
         });
-      });
+    } else {
+      deleteData(`/transactions/${currentTransaction.transaction_id}`)
+        .then((response) => {
+          if (response.status === 201) {
+            setIsOpenFormModal(false);
+            window.location.reload(false);
+            setSnackbar({
+              open: true,
+              message: "Operacion registrada con exito!",
+              severity: SNACKBAR_SEVERITY.SUCCESS,
+            });
+          } else {
+            throw new Error();
+          }
+        })
+        .catch((e) => {
+          setIsOpenFormModal(false);
+          setSnackbar({
+            open: true,
+            message: "Hubo un error",
+            severity: SNACKBAR_SEVERITY.ERROR,
+          });
+        });
+    }
   }
 
   return (
     <Dialog open={open} onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <DialogTitle>MODIFICAR TRANSACCION</DialogTitle>
-        <DialogContent>
-          <FormControl fullWidth sx={{ margin: "15px 0" }}>
-            <TextField
-              size="small"
-              label="Concepto"
-              variant="outlined"
-              type="text"
-              id="concept"
-              name="concept"
-              required
-              defaultValue={currentTransaction?.concept}
-            ></TextField>
-          </FormControl>
-          <FormControl fullWidth>
-            <TextField
-              label="Importe"
-              defaultValue={currentTransaction?.amount}
-              name="amount"
-              id="amount"
-              required
-              size="small"
-              InputProps={{
-                inputComponent: NumberFormatCustom,
-              }}
-              variant="outlined"
-            />
-          </FormControl>
-        </DialogContent>
+        <DialogTitle>
+          {variant === "edit"
+            ? "MODIFICAR TRANSACCION"
+            : "ESTA SEGURO QUE DESEA ELIMINAR?"}
+        </DialogTitle>
+        {variant === "edit" && (
+          <DialogContent>
+            <FormControl fullWidth sx={{ margin: "15px 0" }}>
+              <TextField
+                size="small"
+                label="Concepto"
+                variant="outlined"
+                type="text"
+                id="concept"
+                name="concept"
+                required
+                defaultValue={currentTransaction?.concept}
+              ></TextField>
+            </FormControl>
+            <FormControl fullWidth>
+              <TextField
+                label="Importe"
+                defaultValue={currentTransaction?.amount}
+                name="amount"
+                id="amount"
+                required
+                size="small"
+                InputProps={{
+                  inputComponent: NumberFormatCustom,
+                }}
+                variant="outlined"
+              />
+            </FormControl>
+          </DialogContent>
+        )}
         <DialogActions>
           <Button onClick={onClose}>Cancelar</Button>
-          <Button type="submit">Guardar</Button>
+          <Button type="submit">
+            {variant === "edit" ? "Guardar" : "Eliminar"}
+          </Button>
         </DialogActions>
       </form>
     </Dialog>
