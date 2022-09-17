@@ -78,9 +78,7 @@ const NewTransaction = () => {
   const [concept, setConcept] = useState("");
   const [date, setDate] = useState("");
   const setSnackbar = useSnackbarUpdater();
-  const [values, setValues] = useState({
-    importe: "0",
-  });
+  const [amount, setAmount] = useState("");
 
   const currentDate = new Date().toISOString().split("T")[0];
 
@@ -91,10 +89,7 @@ const NewTransaction = () => {
   };
 
   const handleAmountChange = (e) => {
-    setValues({
-      ...values,
-      [e.target.name]: e.target.value,
-    });
+    setAmount(e.target.value);
   };
 
   function handleTypeChange(e) {
@@ -121,6 +116,7 @@ const NewTransaction = () => {
           setCategory("");
           setConcept("");
           setDate("");
+          setAmount("");
         } else {
           throw new Error();
         }
@@ -193,6 +189,7 @@ const NewTransaction = () => {
               id="amount"
               required
               size="small"
+              value={amount}
               InputProps={{
                 inputComponent: NumberFormatCustom,
               }}

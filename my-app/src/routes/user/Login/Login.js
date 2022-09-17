@@ -73,7 +73,6 @@ const Login = () => {
           setUser({ isLoggedIn: true, username: data.name });
           localStorage.setItem("token", data.token);
           localStorage.setItem("Username", data.name);
-          localStorage.setItem("UserID", data.user_id);
           navigate(APP_ROUTES.HOME);
         } else {
           throw new Error();
