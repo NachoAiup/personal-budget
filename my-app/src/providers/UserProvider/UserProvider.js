@@ -5,20 +5,11 @@ const UserUpdaterContext = React.createContext();
 
 function UserProvider({ children }) {
   const [userState, setUserState] = React.useState({
-    isLoggedIn: false,
-    username: null,
+    isLoggedIn: !!localStorage.getItem("token"),
+    username: localStorage.getItem("token")
+      ? localStorage.getItem("Username")
+      : null,
   });
-
-  React.useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const username = localStorage.getItem("Username");
-    if (storedToken) {
-      setUserState({
-        isLoggedIn: true,
-        username,
-      });
-    }
-  }, []);
 
   return (
     <UserStateContext.Provider value={userState}>
